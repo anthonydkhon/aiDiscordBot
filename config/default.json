@@ -4,6 +4,6 @@
   "discordClientSecret": "1hM8sFRcWT_03uwFADgumo9uQnQzqanq",
   "redirectURI": "http://localhost:8000/auth/discord",
   "discordGuildID": "1340040801929134221",
-  "serpaKey": "8951e664ee5023b6711938e8c4372311035db3cb0d2f5297d1f45e6446d6a69e",
-  "discordBotToken": "MTM0MDA0MDgwMTkyOTEzNDIyMQ.GUxuNz.jiWdwie0z-Xa4i79zBGXi2cEos7TRYgSi6_4mU"
+  "serpaKey": "",
+  "discordBotToken": ""
 }
