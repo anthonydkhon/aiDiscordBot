@@ -5,12 +5,21 @@ const config = require("config");
 const cors = require("cors");
 const axios = require("axios");
 const { Client, GatewayIntentBits } = require("discord.js");
+const { OpenAI } = require("openai");
 
 const PORT = 8000;
 
 app.use(express.json({ limit: "500mb" }));
 app.use(cors());
 app.use(express.urlencoded({ limit: "500mb", extended: true }));
+
+
+const openAIApiKey = config.get("openAIApiKey");
+
+const openai = new OpenAI({ apiKey: openAIApiKey });
+
+openai.api_base = 'http://127.0.0.1:1234';
+openai.api_key = 'not needed'
 
 app.get("/", (req, res) => {
   res.send(
@@ -78,6 +87,19 @@ app.get("/auth/discord", async (req, res) => {
   }
 });
 
+const openAISearch = async (query) => {
+  const response = await openai.chat.completions.create({
+    model: "deepseek-r1-distill-qwen-7b",
+    messages: [
+      { role: "system", content: "You are a helpful AI assistant" },
+      { role: "user", content: query },
+    ],
+    max_tokens: 100,
+  });
+  console.log("response data", response);
+  return response.choices[0].message.content;
+};
+
 const googleSearch = async (searchQueryTerm) => {
   const apiKey = config.get("serpaKey");
   const searchUrl = `https://serpapi.com/search.json?q=${encodeURIComponent(
@@ -85,7 +107,7 @@ const googleSearch = async (searchQueryTerm) => {
   )}&api_key=${apiKey}`;
 
   const response = await axios.get(searchUrl);
-  const results = response.data.oraganic_restuls;
+  const results = response.data.organic_results;
 
   console.log("results", results);
 
@@ -113,6 +135,11 @@ client.on("messageCreate", async (message) => {
 
   if (message.content.startsWith("!chat")) {
     console.log("do something");
+    const query = message.content.replace("!chat", "").trim();
+
+    const chatgptResponse = await openAISearch(query);
+
+    message.reply();
   } else if (message.content.startsWith("!search")) {
     console.log("search");
 
